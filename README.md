@@ -1,6 +1,17 @@
 # GeoGuess.it
 
-GeoGuess.it is a Chrome extension that allows users to capture and analyze street views. The extension captures the visible tab and uses Groq AI to analyze the image and provide the top 3 most likely countries where the image could have been taken.
+**GeoGuess.it** is a Chrome extension built to assist players of **GeoGuessr** and other geography-based games. It captures the currently visible tab (such as a Street View scene) and uses the **meta-llama/llama-4-scout-17b-16e-instruct** model to analyze the image. The extension then suggests the top 3 most likely countries where the image could have been taken.  
+Whether you're stuck on a tough round or want to sharpen your guessing skills, GeoGuess.it delivers fast, AI-powered insights to guide your next move.
+
+---
+
+## Features
+- 📸 Capture any Street View scene directly from your browser.
+- 🧠 Analyze scenes using **state-of-the-art AI** (meta-llama/llama-4-scout-17b-16e-instruct).
+- 🌎 Instantly receive the top 3 most likely countries for the scene.
+- 🎯 Perfect for improving at **GeoGuessr** or challenging yourself with random locations.
+
+---
 
 ## Installation
 
