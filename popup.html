@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Street Savvy</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        width: 420px;
+        min-height: 600px;
+        padding: 0;
+        margin: 0;
+        font-family: "Montserrat", Arial, sans-serif;
+        background: url("assets/background.png") center/cover no-repeat, #eaf6fb;
+        position: relative;
+      }
+      .container {
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+        margin: 32px auto;
+        padding: 32px 24px 24px 24px;
+        max-width: 360px;
+        position: relative;
+      }
+      .logo {
+        display: block;
+        margin: 0 auto 18px auto;
+        width: 72px;
+        height: 72px;
+      }
+      h1 {
+        color: #1a3557;
+        text-align: center;
+        margin-bottom: 8px;
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        margin-bottom: 24px;
+      }
+      .geo-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(90deg, #3ec6e0 0%, #4caf50 100%);
+        color: #fff;
+        padding: 12px 22px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(62, 198, 224, 0.08);
+        transition: background 0.2s;
+      }
+      .geo-btn:disabled {
+        background: #b2dfdb;
+        color: #eee;
+        cursor: not-allowed;
+      }
+      .geo-btn img {
+        width: 24px;
+        height: 24px;
+      }
+      #preview {
+        max-width: 100%;
+        margin: 18px 0 0 0;
+        border: 2px solid #3ec6e0;
+        border-radius: 10px;
+        display: none;
+        box-shadow: 0 2px 8px rgba(62, 198, 224, 0.1);
+      }
+      .status {
+        text-align: center;
+        margin: 10px 0 0 0;
+        color: #1a3557;
+        font-size: 1rem;
+        min-height: 24px;
+      }
+      .results-container {
+        margin-top: 24px;
+        padding: 18px 12px;
+        border-radius: 12px;
+        background: #f5fafd;
+        box-shadow: 0 2px 8px rgba(62, 198, 224, 0.06);
+        display: none;
+      }
+      .results-container h3 {
+        margin-top: 0;
+        color: #1a3557;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .pill-badges {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .pill {
+        background: linear-gradient(90deg, #3ec6e0 0%, #4caf50 100%);
+        color: #fff;
+        border-radius: 20px;
+        padding: 6px 18px;
+        font-size: 1rem;
+        font-weight: 600;
+        box-shadow: 0 1px 4px rgba(62, 198, 224, 0.1);
+        letter-spacing: 0.5px;
+      }
+      .settings-section {
+        margin-bottom: 18px;
+        background: #f5fafd;
+        border-radius: 8px;
+        padding: 10px 12px 2px 12px;
+        box-shadow: 0 1px 4px rgba(62, 198, 224, 0.04);
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 4px;
+        color: #1a3557;
+        font-weight: 600;
+      }
+      .form-group input {
+        padding: 6px;
+        width: 180px;
+        border-radius: 5px;
+        border: 1px solid #b2dfdb;
+        margin-right: 8px;
+      }
+      .form-group button {
+        padding: 6px 14px;
+        border-radius: 5px;
+        background: #3ec6e0;
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .form-group button:hover {
+        background: #4caf50;
+      }
+      .loading {
+        text-align: center;
+        color: #1a3557;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <img src="assets/logo.png" alt="Street Savvy Logo" class="logo" />
+      <h1>Street Savvy</h1>
+
+      <div class="settings-section">
+        <h2 style="font-size: 1.1rem; color: #1a3557; margin-bottom: 8px">
+          Settings
+        </h2>
+        <div class="form-group">
+          <label for="apiKey">Groq API Key:</label>
+          <input
+            type="password"
+            id="apiKey"
+            placeholder="Enter your Groq API key"
+          />
+          <button id="saveSettings">Save</button>
+        </div>
+      </div>
+
+      <div class="button-container">
+        <button id="captureBtn" class="geo-btn">
+          <img src="assets/capture.png" alt="Capture" />Capture Screen
+        </button>
+        <button id="analyzeBtn" class="geo-btn" disabled>
+          <img src="assets/analyze.png" alt="Analyze" />Analyze
+        </button>
+      </div>
+
+      <div id="status" class="status"></div>
+      <img id="preview" alt="Preview will appear here" />
+
+      <div id="results" class="results-container">
+        <h3>Top 3 Most Likely Countries</h3>
+        <div id="analysisResults"></div>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

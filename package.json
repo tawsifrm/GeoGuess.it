@@ -1,0 +1,11 @@
+{
+  "name": "street-savvy",
+  "version": "1.0.0",
+  "description": "Street Savvy Chrome Extension",
+  "scripts": {
+    "generate-icons": "node generate_icons.js"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2"
+  }
+} 
