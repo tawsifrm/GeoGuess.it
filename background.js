@@ -4,7 +4,7 @@ let currentStream = null;
 
 // Listen for installation
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('Street Savvy extension installed');
+  console.log('GeoGuess.it extension installed');
 });
 
 // Listen for messages from content script

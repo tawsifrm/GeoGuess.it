@@ -138,12 +138,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 {
                   type: 'text',
-                  text: 'Please analyze this image and list the top 3 most likely countries it could have been taken in. Respond with only the country names, separated by commas, and nothing else.'
+                  text: `You are an expert in geolocation and visual analysis. Please analyze this image carefully and provide the most likely countries where this photo could have been taken, ordered by probability. Consider the following factors in your analysis:
+                  
+                  1. Architecture and building styles
+                  2. Road signs, license plates, and text language
+                  3. Vehicle types and their configurations (steering wheel side, etc.)
+                  4. Vegetation and natural landscape
+                  5. Weather and climate indicators
+                  6. Any visible flags, symbols, or landmarks
+                  7. Street furniture and infrastructure
+                  8. People's clothing and appearance
+                  
+                  For each country, provide:
+                  - The full official country name
+                  - A detailed explanation of the visual evidence supporting this guess
+                  - A confidence percentage (1-100%)
+                  
+                  Format your response as valid JSON with this exact structure:
+                  {
+                    "countries": [
+                      {
+                        "name": "Full Country Name",
+                        "reasoning": "Detailed analysis of visual evidence including specific elements that indicate this location. Mention any distinctive features, signs, or environmental factors that support this conclusion.",
+                        "confidence": 85
+                      },
+                      ...
+                    ]
+                  }
+                  
+                  Be precise and specific in your analysis. If you see text, mention what it says and what language it appears to be in. Note any unique architectural styles, vehicle types, or environmental features that are characteristic of specific regions.`
                 }
               ]
             }
           ],
-          max_tokens: 1000
+          response_format: { type: "json_object" },
+          max_tokens: 1500
         })
       });
 
@@ -159,11 +188,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const data = await response.json();
       
-      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      if (!data.choices?.[0]?.message?.content) {
         throw new Error('Invalid response from Groq API');
       }
 
-      return data.choices[0].message.content;
+      try {
+        // Parse the JSON response from the model
+        const content = JSON.parse(data.choices[0].message.content);
+        return content.countries || [];
+      } catch (e) {
+        console.error('Error parsing API response:', e);
+        throw new Error('Failed to parse the analysis results');
+      }
     } catch (error) {
       console.error('Error analyzing with Groq:', error);
       throw error;
@@ -179,12 +215,66 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (currentImageData) {
         const analysis = await analyzeWithGroq(currentImageData);
-        // Parse comma-separated countries and display as pill badges
-        const countries = analysis.split(',').map(c => c.trim()).filter(Boolean);
-        if (countries.length > 0) {
-          analysisResults.innerHTML = `<div class="pill-badges">${countries.map(c => `<span class='pill'>${c}</span>`).join('')}</div>`;
+        if (analysis.length > 0) {
+          // Using HTML entities for emojis for better compatibility
+          const countryEmojis = ['&#x31;&#xFE0F;&#x20E3;', '&#x32;&#xFE0F;&#x20E3;', '&#x33;&#xFE0F;&#x20E3;'];
+          
+          // Create a function to safely escape HTML
+          const escapeHtml = (unsafe) => {
+            return unsafe
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#039;');
+          };
+
+          analysisResults.innerHTML = `
+            <div class="pill-badges">
+              ${analysis.map((country, index) => {
+                const safeReasoning = escapeHtml(country.reasoning);
+                const confidence = country.confidence ? ` (${Math.round(country.confidence)}% confidence)` : '';
+                return `
+                  <div class="country-container">
+                    <div class="pill" data-reasoning="${safeReasoning}" data-confidence="${country.confidence || 0}">
+                      <span class="emoji" aria-hidden="true">${countryEmojis[index] || '🌍'}</span>
+                      <span class="country-name">${country.name}${confidence}</span>
+                      <span class="info-icon">V</span>
+                    </div>
+                    <div class="reasoning" style="display: none;"></div>
+                  </div>`;
+              }).join('')}
+            </div>
+          `;
+          
+          // Add click handlers for the pills
+          document.querySelectorAll('.pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+              const reasoningDiv = this.nextElementSibling;
+              const isVisible = reasoningDiv.style.display === 'block';
+              
+              // Hide all reasoning divs first
+              document.querySelectorAll('.reasoning').forEach(el => {
+                el.style.display = 'none';
+                el.previousElementSibling.classList.remove('active');
+              });
+              
+              // Toggle the clicked one if it wasn't already visible
+              if (!isVisible) {
+                reasoningDiv.style.display = 'block';
+                // Use innerHTML to properly render any HTML entities
+                reasoningDiv.innerHTML = this.dataset.reasoning
+                  .replace(/&amp;/g, '&')
+                  .replace(/&lt;/g, '<')
+                  .replace(/&gt;/g, '>')
+                  .replace(/&quot;/g, '"')
+                  .replace(/&#039;/g, "'");
+                this.classList.add('active');
+              }
+            });
+          });
         } else {
-          analysisResults.innerHTML = '<p>No countries detected.</p>';
+          analysisResults.innerHTML = '<p class="no-results">No countries detected. Try capturing a different image.</p>';
         }
       } else {
         analysisResults.innerHTML = '<p>No image captured. Please capture an image first.</p>';

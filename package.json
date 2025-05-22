@@ -1,7 +1,7 @@
 {
   "name": "street-savvy",
   "version": "1.0.0",
-  "description": "Street Savvy Chrome Extension",
+  "description": "GeoGuess.it Chrome Extension",
   "scripts": {
     "generate-icons": "node generate_icons.js"
   },
